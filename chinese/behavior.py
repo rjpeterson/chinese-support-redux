@@ -25,7 +25,18 @@ from .sound import no_sound, sound
 from .transcribe import accentuate, no_tone, separate, transcribe
 from .translate import translate
 from .util import cleanup, get_first, has_field, hide, no_color, set_all
+from .yellowBridgeScraper import scraper
 
+def update_example(hanzi, d):
+    # Update example field from Hanzi field if non-empty (only if field actually
+    # exists)
+    if (has_field(config['fields']['example'], d) and get_first(config['fields']['example'], d) == ''):
+        s = scraper(hanzi)
+        if s:
+            set_all(config['fields']['example'], d, to=s)
+            return 1, 0  # 1 field filled, 0 errors
+        return 0, 1
+    return 0, 0
 
 def get_classifier(hanzi, d):
     cs = dictionary.get_classifiers(hanzi)
@@ -124,12 +135,8 @@ def update_Transcription_fields(hanzi, d):
 
 
 def format_Pinyin_fields(d):
-    t = colorize(
-        accentuate(
-            separate(cleanup(get_first(config['fields']['pinyin'], d))),
-            True
-        )
-    )
+    t = colorize(accentuate(separate(cleanup(
+        get_first(config['fields']['pinyin'], d)))))#, True))
     t = hide(t, no_tone(t))
     set_all(config['fields']['pinyin'], d, to=t)
 
@@ -146,7 +153,7 @@ def update_Pinyin_fields(hanzi, d):
 
 def format_PinyinTW_fields(d):
     t = colorize(accentuate(separate(cleanup(
-        get_first(config['fields']['pinyinTaiwan'], d))), True))
+        get_first(config['fields']['pinyinTaiwan'], d)))))#, True))
     t = hide(t, no_tone(t))
     set_all(config['fields']['pinyinTaiwan'], d, to=t)
 
@@ -442,6 +449,7 @@ def updateFields(note, currentField, fieldNames):
             update_Traditional_fields(hanzi, fieldsCopy)
             update_all_Ruby_fields(hanzi, fieldsCopy)
             update_Silhouette_fields(hanzi, fieldsCopy)
+            update_example(hanzi, fieldsCopy)
         else:
             eraseFields(fieldsCopy)
     elif currentField in config['fields']['transcription']:

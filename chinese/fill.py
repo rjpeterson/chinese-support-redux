@@ -35,7 +35,8 @@ from .behavior import (
     update_all_Color_fields,
     update_all_Ruby_fields,
     update_all_Sound_fields,
-    update_bopomofo
+    update_bopomofo,
+    update_example
 )
 from .main import config
 from .util import cleanup, get_first, has_field, no_html

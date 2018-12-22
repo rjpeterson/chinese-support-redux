@@ -6,3 +6,5 @@
 .ropeproject/
 __pycache__
 chinese/meta.json
+*.iml
+*.xml

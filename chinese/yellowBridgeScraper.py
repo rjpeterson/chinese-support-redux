@@ -2,24 +2,28 @@
 It takes a single chinese character as input and returns the first entry in the "common words with this character" table from yellowbridge.com.
 I plan to use this to auto fill examples into single-character flashcards."""
 
+import urllib.parse
+import re
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
-import urllib.parse
 
 from .hanzi import has_hanzi
 from .util import cleanup, no_color
 from .sound import no_sound
 from .transcribe import transcribe
+from .hanzi import traditional
+from .writtenChineseScraper import scrapeSentenceExample
 
 def buildUrl(hanzi):
+    # Only used to return bigram examples of monograms
     url_gtts = 'https://www.yellowbridge.com/chinese/charsearch.php'
     # Parse character into UTF-8
     query = urllib.parse.quote(hanzi)
     # Create URL
     return url_gtts + "?zi=" + query
 
-def scraper(hanzi):
-    # Cleanup hanzi
+def scrub(hanzi):
+    # Remove ruby text, color, sound from hanzi
     from .ruby import ruby_bottom, has_ruby
     if not has_hanzi(hanzi):
         return ''
@@ -27,12 +31,7 @@ def scraper(hanzi):
         hanzi = ruby_bottom(hanzi)
     hanzi = cleanup(no_color(no_sound(hanzi)))
 
-    if not hanzi:
-        return ''
-    if len(hanzi) != 1:
-        # raise Exception('You must input a single hanzi')
-        return''
-
+def return_bigram_example(hanzi):
     url = buildUrl(hanzi)
 
     # Read page into bs4 object
@@ -48,6 +47,7 @@ def scraper(hanzi):
 
     # Pull string data from first row
     characters = first_row.find("a", attrs={"class": "zh"}).string
+    characters = traditional(characters)
     pronounce = first_row.find("span", attrs={"class": "phonetic pronouncer0"}).string
     definition = first_row.findAll("a", attrs={"class": "definition"})
     definition_strings = []
@@ -62,4 +62,18 @@ def scraper(hanzi):
     pronounce = pronounce.replace(''.join(pinyin), '____')
 
     # Fill example, pinyin, & definition
-    return(characters + " &nbsp; &nbsp; &nbsp; &nbsp;" + pronounce + "&nbsp;<div>" + ', '.join(definition_strings) + "</div>")
+    return (characters + " &nbsp; &nbsp; &nbsp; &nbsp;" + pronounce + "&nbsp;<div>" + ', '.join(
+        definition_strings) + "</div>")
+
+
+def scraper(hanzi):
+    hanzi = scrub(hanzi)
+
+    if not hanzi:
+        return ''
+    if len(hanzi) = 1:
+        return return_bigram_example(hanzi)
+    elif len(hanzi) = 2:
+        return scrapeSentenceExample(hanzi)
+    else:
+        return ''

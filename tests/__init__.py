@@ -1,4 +1,4 @@
-# Copyright © 2018 Joseph Lorimer <luoliyan@posteo.net>
+# Copyright © 2018-2019 Joseph Lorimer <luoliyan@posteo.net>
 #
 # This file is part of Chinese Support Redux.
 #
@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License along with
 # Chinese Support Redux.  If not, see <https://www.gnu.org/licenses/>.
 
-import unittest
 from gettext import NullTranslations
 from logging import getLogger
 from unittest import TestCase
@@ -23,7 +22,6 @@ from unittest.mock import MagicMock, patch
 
 
 NullTranslations().install()
-unittest.util._MAX_LENGTH = 160
 
 modules = {
     'PyQt5.QtGui': MagicMock(),
@@ -42,17 +40,39 @@ modules = {
     'requests': MagicMock(),
 }
 patch.dict('sys.modules', modules).start()
-patch(
-    'aqt.mw.addonManager.getConfig',
-    lambda a: {
-        'firstRun': False,
-        'tip_number': 0,
-        'transcription': 'Pinyin',
-    }
-).start()
+
+config = {
+    'dictionary': 'en',
+    'firstRun': False,
+    'speech': None,
+    'tip_number': 0,
+    'transcription': 'Pinyin',
+    'fields': {
+        'bopomofo': [],
+        'cantonese': [],
+        'cantoneseSound': ['Sound (Cantonese)'],
+        'classifier': ['Classifier'],
+        'color': ['Color'],
+        'colorBopomofo': [],
+        'colorCantonese': [],
+        'colorPinyin': [],
+        'colorPinyinTaiwan': [],
+        'english': ['English'],
+        'french': ['French'],
+        'german': ['German'],
+        'mandarinSound': ['Sound (Mandarin)'],
+        'meaning': ['Meaning'],
+        'pinyin': ['Pinyin'],
+        'pinyinTaiwan': [],
+        'sound': ['Sound'],
+        'transcription': ['Reading'],
+    },
+}
+patch('aqt.mw.addonManager.getConfig', lambda a: config).start()
 
 
-class ChineseTests(TestCase):
+class ChineseTest(TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.logger = getLogger()
         self.logger.setLevel('DEBUG')

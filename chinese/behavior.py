@@ -132,6 +132,8 @@ def fill_transcription(hanzi, note):
     format_transcription(note)
     return 0
 
+    format_transcription(note)
+    return 0
 
 def format_pinyin(note):
     t = colorize(

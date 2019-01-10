@@ -15,7 +15,13 @@
 # You should have received a copy of the GNU General Public License along with
 # Chinese Support Redux.  If not, see <https://www.gnu.org/licenses/>.
 
-from chinese.hanzi import has_hanzi, silhouette, simplify, traditional
+from chinese.hanzi import (
+    has_hanzi,
+    separate_chars,
+    silhouette,
+    simplify,
+    traditional,
+)
 from tests import ChineseTest
 
 
@@ -42,7 +48,48 @@ class Simplify(ChineseTest):
     def test_simplify(self):
         self.assertEqual(simplify('繁體字'), '繁体字')
 
+    def test_simplify_not_in_database(self):
+        self.assertIs(simplify('𠂉'), None)
+
 
 class Traditional(ChineseTest):
     def test_traditional(self):
         self.assertEqual(traditional('简体字'), '簡體字')
+
+    def test_traditional_not_in_database(self):
+        self.assertIs(traditional('𠂉'), None)
+
+
+class SeparateChars(ChineseTest):
+    def test_grouped_input_spaced_punc(self):
+        self.assertEqual(
+            separate_chars('没有 ，是 我 第一次 来 上海 旅游 。'),
+            ['没有', '，', '是', '我', '第一次', '来', '上海', '旅游', '。'],
+        )
+
+    def test_grouped_input_unspaced_punc(self):
+        self.assertEqual(
+            separate_chars('没有，是 我 第一次 来 上海 旅游。'),
+            ['没有', '，', '是', '我', '第一次', '来', '上海', '旅游', '。'],
+        )
+
+    def test_grouped_input_ungrouped_output(self):
+        self.assertEqual(
+            separate_chars('没有，是 我 第一次 来 上海 旅游。', grouped=False),
+            [
+                '没',
+                '有',
+                '，',
+                '是',
+                '我',
+                '第',
+                '一',
+                '次',
+                '来',
+                '上',
+                '海',
+                '旅',
+                '游',
+                '。',
+            ],
+        )

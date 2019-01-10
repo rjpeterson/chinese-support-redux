@@ -1,3 +1,4 @@
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -19,7 +20,6 @@ def scrapeSentenceExample(hanzi):
         browser.quit()
 
 def buildURL(hanzi):
-    # Only used to return bigram examples of monograms
     url_gtts = 'https://dictionary.writtenchinese.com/'
     # Parse character into UTF-8
     query = urllib.parse.quote(hanzi)

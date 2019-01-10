@@ -3,19 +3,16 @@ It takes a single chinese character as input and returns the first entry in the 
 I plan to use this to auto fill examples into single-character flashcards."""
 
 import urllib.parse
-import re
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 
-from .hanzi import has_hanzi
+from .hanzi import has_hanzi, traditional
 from .util import cleanup, no_color
 from .sound import no_sound
 from .transcribe import transcribe
-from .hanzi import traditional
 from .writtenChineseScraper import scrapeSentenceExample
 
 def buildUrl(hanzi):
-    # Only used to return bigram examples of monograms
     url_gtts = 'https://www.yellowbridge.com/chinese/charsearch.php'
     # Parse character into UTF-8
     query = urllib.parse.quote(hanzi)
@@ -56,7 +53,7 @@ def return_bigram_example(hanzi):
         definition_strings.append(value)
 
     # Fetch pinyin
-    pinyin = transcribe(hanzi, transcription="Pinyin")
+    pinyin = transcribe(hanzi, target="Pinyin")
 
     # Replace pinyin of query with '____'
     pronounce = pronounce.replace(''.join(pinyin), '____')
@@ -71,9 +68,9 @@ def scraper(hanzi):
 
     if not hanzi:
         return ''
-    if len(hanzi) = 1:
+    if len(hanzi) == 1:
         return return_bigram_example(hanzi)
-    elif len(hanzi) = 2:
+    elif len(hanzi) == 2:
         return scrapeSentenceExample(hanzi)
     else:
         return ''

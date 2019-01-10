@@ -27,7 +27,7 @@ from .translate import translate
 from .util import cleanup, get_first, has_field, hide, no_color, set_all
 from .yellowBridgeScraper import scraper
 
-def update_example(hanzi, d):
+def fill_example(hanzi, d):
     # Update example field from Hanzi field if non-empty (only if field actually
     # exists)
     if (has_field(config['fields']['example'], d) and get_first(config['fields']['example'], d) == ''):
@@ -128,9 +128,6 @@ def fill_transcription(hanzi, note):
         trans = hide(trans, no_tone(trans))
         set_all(config['fields']['transcription'], note, to=trans)
         return 1
-
-    format_transcription(note)
-    return 0
 
     format_transcription(note)
     return 0

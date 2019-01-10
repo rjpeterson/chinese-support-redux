@@ -36,7 +36,6 @@ from .behavior import (
     fill_taiwan_pinyin,
     fill_trad,
     fill_transcription,
-    update_example
 )
 from .main import config
 from .util import cleanup, get_first, has_field, no_html
